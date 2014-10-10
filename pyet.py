@@ -10,6 +10,7 @@ import logging
 # A list with a couple of helper functions
 # and a pretend-it-never happened approach to errors
 class PietStack(list):
+
     # TODO: Add pop error handling
     def push(self, x):
         x = int(x)
@@ -33,6 +34,7 @@ class PietStack(list):
 
 
 class SourceMap():
+
     def print_map(self, show_corners=False):
         if show_corners:
             corners = set()
@@ -85,9 +87,11 @@ class SourceMap():
                         fill_value = blobchar
                         annotations["colors"][fill_value] = source[j][i]
                         blobchar += 1
-                    self._fill((i, j), source[j][i], fill_value, source, source_map, annotations)
+                    self._fill((i, j), source[j][i], fill_value,
+                               source, source_map, annotations)
 
-    def _fill(self, loc, target_value, fill_value, ingrid, outgrid, annotations):
+    def _fill(self, loc, target_value, fill_value,
+              ingrid, outgrid, annotations):
         x, y = loc
         if x < 0 or y < 0 or y >= len(ingrid) or x >= len(ingrid[0]):
             return
@@ -97,46 +101,59 @@ class SourceMap():
             return
         outgrid[y][x] = fill_value
         if target_value != "S" and target_value != "T":
-            annotations["size"][fill_value] = annotations["size"].get(fill_value, 0) + 1
+            annotations["size"][fill_value] = annotations["size"].get(
+                fill_value, 0) + 1
             self._update_corners(loc, annotations, fill_value)
-        self._fill((x - 1, y), target_value, fill_value, ingrid, outgrid, annotations)
-        self._fill((x + 1, y), target_value, fill_value, ingrid, outgrid, annotations)
-        self._fill((x, y - 1), target_value, fill_value, ingrid, outgrid, annotations)
-        self._fill((x, y + 1), target_value, fill_value, ingrid, outgrid, annotations)
+        self._fill(
+            (x - 1, y), target_value, fill_value, ingrid, outgrid, annotations)
+        self._fill(
+            (x + 1, y), target_value, fill_value, ingrid, outgrid, annotations)
+        self._fill(
+            (x, y - 1), target_value, fill_value, ingrid, outgrid, annotations)
+        self._fill(
+            (x, y + 1), target_value, fill_value, ingrid, outgrid, annotations)
 
     def _update_corners(self, loc, annotations, fill_value):
         if fill_value not in annotations["corners"]:
             annotations["corners"][fill_value] = dict()
         # upper end of right edge
-        oldloc = annotations["corners"][fill_value].get(("right", "left"), (float('-inf'), float('+inf')))
+        oldloc = annotations["corners"][fill_value].get(
+            ("right", "left"), (float('-inf'), float('+inf')))
         if loc[0] > oldloc[0] or (loc[0] == oldloc[0] and loc[1] < oldloc[1]):
             annotations["corners"][fill_value][("right", "left")] = loc
         # lower end of right edge
-        oldloc = annotations["corners"][fill_value].get(("right", "right"), (float('-inf'), float('-inf')))
+        oldloc = annotations["corners"][fill_value].get(
+            ("right", "right"), (float('-inf'), float('-inf')))
         if loc[0] > oldloc[0] or (loc[0] == oldloc[0] and loc[1] > oldloc[1]):
             annotations["corners"][fill_value][("right", "right")] = loc
         # right end of lower edge
-        oldloc = annotations["corners"][fill_value].get(("down", "left"), (float('-inf'), float('-inf')))
+        oldloc = annotations["corners"][fill_value].get(
+            ("down", "left"), (float('-inf'), float('-inf')))
         if loc[1] > oldloc[1] or (loc[1] == oldloc[1] and loc[0] > oldloc[0]):
             annotations["corners"][fill_value][("down", "left")] = loc
         # left end of lower edge
-        oldloc = annotations["corners"][fill_value].get(("down", "right"), (float('+inf'), float('-inf')))
+        oldloc = annotations["corners"][fill_value].get(
+            ("down", "right"), (float('+inf'), float('-inf')))
         if loc[1] > oldloc[1] or (loc[1] == oldloc[1] and loc[0] < oldloc[0]):
             annotations["corners"][fill_value][("down", "right")] = loc
         # lower end of left edge
-        oldloc = annotations["corners"][fill_value].get(("left", "left"), (float('+inf'), float('-inf')))
+        oldloc = annotations["corners"][fill_value].get(
+            ("left", "left"), (float('+inf'), float('-inf')))
         if loc[0] < oldloc[0] or (loc[0] == oldloc[0] and loc[1] > oldloc[1]):
             annotations["corners"][fill_value][("left", "left")] = loc
         # upper end of left edge
-        oldloc = annotations["corners"][fill_value].get(("left", "right"), (float('+inf'), float('+inf')))
+        oldloc = annotations["corners"][fill_value].get(
+            ("left", "right"), (float('+inf'), float('+inf')))
         if loc[0] < oldloc[0] or (loc[0] == oldloc[0] and loc[1] < oldloc[1]):
             annotations["corners"][fill_value][("left", "right")] = loc
         # left end of upper edge
-        oldloc = annotations["corners"][fill_value].get(("up", "left"), (float('+inf'), float('+inf')))
+        oldloc = annotations["corners"][fill_value].get(
+            ("up", "left"), (float('+inf'), float('+inf')))
         if loc[1] < oldloc[1] or (loc[1] == oldloc[1] and loc[0] < oldloc[0]):
             annotations["corners"][fill_value][("up", "left")] = loc
         # right end of upper edge
-        oldloc = annotations["corners"][fill_value].get(("up", "right"), (float('-inf'), float('+inf')))
+        oldloc = annotations["corners"][fill_value].get(
+            ("up", "right"), (float('-inf'), float('+inf')))
         if loc[1] < oldloc[1] or (loc[1] == oldloc[1] and loc[0] > oldloc[0]):
             annotations["corners"][fill_value][("up", "right")] = loc
 
@@ -151,21 +168,23 @@ class SourceMap():
 
 # Holds the image data and tells the interpreter where to go
 class Navigator:
+
     def __init__(self, source):
         self._source_map = SourceMap(source)
 
     def find_next_loc(self, loc, dp, cc, changes=0):
         if changes == 8:
             return ((-1, -1), dp, cc, False)
-        new_dp = dp
-        new_cc = cc
-        if not self._source_map.in_bounds(loc):  # the Interpreter is out of bounds
+        if not self._source_map.in_bounds(loc):
+            # the Interpreter is out of bounds
             return ((-1, -1), dp, cc, False)
         blob = self._source_map.get_blob(loc)
-        if blob == "0":  # the Interpreter is on a black square
+        if blob == "0":
+            # the Interpreter is on a black square
             return ((-1, -1), dp, cc, False)
-        if blob == " ":  # the Interpreter is on a white square
-            return slide(loc, dp, cc, set())
+        if blob == " ":
+            # the Interpreter is on a white square
+            return self.slide(loc, dp, cc, set())
         corner = self._source_map.get_corner(loc, dp, cc)
         direction = Navigator._direction(dp)
         next_loc = (corner[0] + direction[0], corner[1] + direction[1])
@@ -195,25 +214,15 @@ class Navigator:
         direction = Navigator._direction(dp)
         next_loc = (loc[0] + direction[0], loc[1] + direction[1])
         if not self._source_map.in_bounds(next_loc):
-            return self.slide(loc, Interpreter.dp_rotate(dp), Interpreter.cc_flip(cc), history)
+            return self.slide(loc, Interpreter.dp_rotate(dp),
+                              Interpreter.cc_flip(cc), history)
         next_blob = self._source_map.get_blob(next_loc)
         if next_blob == "0":
-            return self.slide(loc, Interpreter.dp_rotate(dp), Interpreter.cc_flip(cc), history)
+            return self.slide(loc, Interpreter.dp_rotate(dp),
+                              Interpreter.cc_flip(cc), history)
         if next_blob == " ":
             return self.slide(next_loc, dp, cc, history)
         return (next_loc, dp, cc, False)
-
-    def try_loc(self, loc, dp, cc):
-        blob = self._source_map.get_blob(loc)
-        if(blob == " "):
-            direction = self._direction(dp)
-            return try_loc((loc[0] + direction[0], loc[1] + direction[1]), dp, cc, 0)
-        elif(blob == "0"):
-            if changes == 9:
-                return ((-1, -1), dp, cc)
-            if changes % 2 == 1:
-                cc = Interpreter.cc_flip(cc)
-            pass
 
     @staticmethod
     def _direction(dp):
@@ -243,20 +252,24 @@ class Interpreter:
             previous_loc = self._loc
             previous_blob = self._navigator._source_map.get_blob(previous_loc)
             if previous_blob != " ":
-                previous_color = self._navigator._source_map.get_blob_color(previous_blob)
-                previous_size = self._navigator._source_map.get_blob_size(previous_blob)
+                previous_color = self._navigator._source_map.get_blob_color(
+                    previous_blob)
+                previous_size = self._navigator._source_map.get_blob_size(
+                    previous_blob)
             self._loc = next_loc[0]
             self._dp = next_loc[1]
             self._cc = next_loc[2]
             current_blob = self._navigator._source_map.get_blob(self._loc)
-            current_color = self._navigator._source_map.get_blob_color(current_blob)
+            current_color = self._navigator._source_map.get_blob_color(
+                current_blob)
             if(previous_color != "S" and next_loc[3]):
                 if(steps is not None):
                     steps -= 1
                     if steps == 0:
                         return
                 self.execute(previous_color, current_color, previous_size)
-            next_loc = self._navigator.find_next_loc(self._loc, self._dp, self._cc)
+            next_loc = self._navigator.find_next_loc(
+                self._loc, self._dp, self._cc)
 
     def execute(self, old_color, new_color, size):
         lightness = dict()
@@ -461,7 +474,8 @@ class Interpreter:
 
 def main():
     with open(sys.argv[1], "r") as sourcefile:
-        source = [[char for char in row.strip()] for row in sourcefile.readlines()]
+        source = [[char for char in row.strip()] for row in
+                  sourcefile.readlines()]
     interpreter = Interpreter(source)
     # interpreter._navigator._source_map.print_map()
     interpreter.run(1100)
