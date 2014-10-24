@@ -17,5 +17,25 @@ class TestStack(unittest.TestCase):
     def test_pop2(self):
         self.assertEqual((5, 4), self.stack.pop2())
 
+    def test_pos_roll(self):
+        self.stack.roll(2, 2)
+        self.assertEqual([1, 2, 3, 4, 5], self.stack)
+
+        self.stack.roll(1, 2)
+        self.assertEqual([1, 2, 3, 5, 4], self.stack)
+
+        self.stack.roll(4, 3)
+        self.assertEqual([1, 2, 4, 3, 5], self.stack)
+
+    def test_neg_roll(self):
+        self.stack.roll(-2, 2)
+        self.assertEqual([1, 2, 3, 4, 5], self.stack)
+
+        self.stack.roll(-1, 2)
+        self.assertEqual([1, 2, 3, 5, 4], self.stack)
+
+        self.stack.roll(-4, 3)
+        self.assertEqual([1, 2, 5, 4, 3], self.stack)
+
 if __name__ == '__main__':
     unittest.main()

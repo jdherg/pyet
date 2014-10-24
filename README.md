@@ -19,7 +19,6 @@ python3 pyet.py source.pyet
 
 Pyet does not yet support:
 * The "in" commands (char or int).
-* The "roll" command
 * Specifying a codel size. Codels are 1 pixel.
 * Color blocks larger than ~1000 codels.
 

@@ -26,8 +26,10 @@ class PietStack(list):
         return self[-1]
 
     def roll(self, n, depth):
+        if depth <= 0 or depth > super().__len__():
+            return
         n = n % depth
-        if depth <= 0 or n == 0:
+        if n == 0:
             return
         super().insert(super().__len__() - depth, super().pop())
         self.roll(n - 1, depth)
