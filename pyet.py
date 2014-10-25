@@ -4,6 +4,7 @@
 
 import sys
 import logging
+import operator
 # logging.basicConfig(level="DEBUG", format='action: %(message)s')
 
 
@@ -34,30 +35,25 @@ class PietStack(list):
             return None
         return self[-1]
 
-    def add(self):
+    def _bin_op(self, func):
         a, b = self.pop2()
         if a is not None and b is not None:
-            self.push(b + a)
+            self.push(func(b, a))
+
+    def add(self):
+        self._bin_op(operator.add)
 
     def subtract(self):
-        a, b = self.pop2()
-        if a is not None and b is not None:
-            self.push(b - a)
+        self._bin_op(operator.sub)
 
     def multiply(self):
-        a, b = self.pop2()
-        if a is not None and b is not None:
-            self.push(b * a)
+        self._bin_op(operator.mul)
 
     def divide(self):
-        a, b = self.pop2()
-        if a is not None and b is not None:
-            self.push(int(b / a))
+        self._bin_op(operator.floordiv)
 
     def mod(self):
-        a, b = self.pop2()
-        if a is not None and b is not None:
-            self.push(b % a)
+        self._bin_op(operator.mod)
 
     def logical_not(self):
         a = self.pop()
@@ -69,9 +65,7 @@ class PietStack(list):
             self.push(1)
 
     def greater(self):
-        a, b = self.pop2()
-        if a is not None and b is not None:
-            self.push(int(b > a))
+        self._bin_op(operator.gt)
 
     def duplicate(self):
         a = self.top()
