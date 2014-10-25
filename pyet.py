@@ -11,28 +11,86 @@ import logging
 # and a pretend-it-never happened approach to errors
 class PietStack(list):
 
-    # TODO: Add pop error handling
     def push(self, x):
         x = int(x)
         self.append(x)
         pass
 
+    def pop(self):
+        if super().__len__() < 1:
+            return None
+        a = super().pop()
+        return a
+
     def pop2(self):
+        if super().__len__() < 2:
+            return None, None
         a = self.pop()
         b = self.pop()
         return a, b
 
     def top(self):
+        if super().__len__() < 1:
+            return None
         return self[-1]
 
-    def roll(self, n, depth):
+    def add(self):
+        a, b = self.pop2()
+        if a is not None and b is not None:
+            self.push(b + a)
+
+    def subtract(self):
+        a, b = self.pop2()
+        if a is not None and b is not None:
+            self.push(b - a)
+
+    def multiply(self):
+        a, b = self.pop2()
+        if a is not None and b is not None:
+            self.push(b * a)
+
+    def divide(self):
+        a, b = self.pop2()
+        if a is not None and b is not None:
+            self.push(int(b / a))
+
+    def mod(self):
+        a, b = self.pop2()
+        if a is not None and b is not None:
+            self.push(b % a)
+
+    def logical_not(self):
+        a = self.pop()
+        if a is None:
+            return
+        if a:
+            self.push(0)
+        else:
+            self.push(1)
+
+    def greater(self):
+        a, b = self.pop2()
+        if a is not None and b is not None:
+            self.push(int(b > a))
+
+    def duplicate(self):
+        a = self.top()
+        if a is not None:
+            self.push(a)
+
+    def roll(self):
+        n, depth = self.pop2()
+        if n is not None and depth is not None:
+            self._roll_helper(n, depth)
+
+    def _roll_helper(self, n, depth):
         if depth <= 0 or depth > super().__len__():
             return
         n = n % depth
         if n == 0:
             return
         super().insert(super().__len__() - depth, super().pop())
-        self.roll(n - 1, depth)
+        self._roll_helper(n - 1, depth)
 
 
 class SourceMap():
@@ -350,59 +408,28 @@ class Interpreter:
         self._stack.push(value)
 
     def pop(self):
-        if len(self._stack) < 1:
-            return
         self._stack.pop()
 
     def add(self):
-        if len(self._stack) < 2:
-            return
-        a, b = self._stack.pop2()
-        self._stack.push(b + a)
+        self._stack.add()
 
     def subtract(self):
-        if len(self._stack) < 2:
-            return
-        a, b = self._stack.pop2()
-        self._stack.push(b - a)
+        self._stack.subtract()
 
     def multiply(self):
-        if len(self._stack) < 2:
-            return
-        a, b = self._stack.pop2()
-        self._stack.push(b * a)
+        self._stack.multiply()
 
     def divide(self):
-        if len(self._stack) < 2:
-            return
-        a, b = self._stack.pop2()
-        if b != 0:
-            self._stack.push(b / a)
+        self._stack.divide()
 
     def mod(self):
-        if len(self._stack) < 2:
-            return
-        a, b = self._stack.pop2()
-        if b != 0:
-            self._stack.push(b % a)
+        self._stack.mod()
 
     def logicalnot(self):
-        if len(self._stack) < 1:
-            return
-        a = self._stack.pop()
-        if a != 0:
-            self._stack.push(0)
-        else:
-            self._stack.push(1)
+        self._stack.logical_not()
 
     def greater(self):
-        if len(self._stack) < 2:
-            return
-        a, b = self._stack.pop2()
-        if b > a:
-            self._stack.push(1)
-        else:
-            self._stack.push(0)
+        self._stack.greater()
 
     @staticmethod
     def dp_rotate(dp):
@@ -439,17 +466,10 @@ class Interpreter:
             self._cc = self.cc_flip(self._cc)
 
     def duplicate(self):
-        if len(self._stack) < 1:
-            return
-        a = self._stack.top()
-        self._stack.push(a)
+        self._stack.duplicate()
 
     def roll(self):
-        if len(self._stack) < 2:
-            return
-        n = self._stack.pop()
-        depth = self._stack.pop()
-        self._stack.roll(n, depth)
+        self._stack.roll()
 
     def in_char(self):
         print("Enter a character: ")
