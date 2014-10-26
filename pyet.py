@@ -5,6 +5,7 @@
 import sys
 import logging
 import operator
+import optparse
 # logging.basicConfig(level="DEBUG", format='action: %(message)s')
 
 
@@ -489,7 +490,15 @@ class Interpreter:
 
 
 def main():
-    with open(sys.argv[1], "r") as sourcefile:
+
+    usage = "usage: python %prog source_file"
+    parser = optparse.OptionParser(usage=usage)
+    (options, args) = parser.parse_args()
+    if len(args) < 1:
+        parser.print_help()
+        exit()
+
+    with open(args[0], "r") as sourcefile:
         source = [[char for char in row.strip()] for row in
                   sourcefile.readlines()]
     interpreter = Interpreter(source)
