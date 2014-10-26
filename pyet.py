@@ -494,6 +494,6 @@ def main():
                   sourcefile.readlines()]
     interpreter = Interpreter(source)
     # interpreter._navigator._source_map.print_map()
-    interpreter.run(1100)
+    interpreter.run()
 if __name__ == "__main__":
     main()
