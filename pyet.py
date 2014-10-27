@@ -6,8 +6,6 @@ import sys
 import logging
 import operator
 import optparse
-# logging.basicConfig(level="DEBUG", format='action: %(message)s')
-
 
 # A list with a couple of helper functions
 # and a pretend-it-never happened approach to errors
@@ -343,60 +341,60 @@ class Interpreter:
             if lightness_change == 0:
                 pass
             elif lightness_change == 1:
-                logging.debug("push, value %d" % size)
+                logging.debug("action: push, value %d" % size)
                 self.push(size)
             elif lightness_change == 2:
-                logging.debug("pop")
+                logging.debug("action: pop")
                 self.pop()
         if hue_change == 1:
             if lightness_change == 0:
-                logging.debug("add")
+                logging.debug("action: add")
                 self.add()
             elif lightness_change == 1:
-                logging.debug("sub")
+                logging.debug("action: sub")
                 self.subtract()
             elif lightness_change == 2:
-                logging.debug("multiply")
+                logging.debug("action: multiply")
                 self.multiply()
         if hue_change == 2:
             if lightness_change == 0:
-                logging.debug("divide")
+                logging.debug("action: divide")
                 self.divide()
             elif lightness_change == 1:
-                logging.debug("mod")
+                logging.debug("action: mod")
                 self.mod()
             elif lightness_change == 2:
-                logging.debug("not")
+                logging.debug("action: not")
                 self.logicalnot()
         if hue_change == 3:
             if lightness_change == 0:
-                logging.debug("greater")
+                logging.debug("action: greater")
                 self.greater()
             elif lightness_change == 1:
-                logging.debug("pointer")
+                logging.debug("action: pointer")
                 self.pointer()
             elif lightness_change == 2:
-                logging.debug("switch")
+                logging.debug("action: switch")
                 self.switch()
         if hue_change == 4:
             if lightness_change == 0:
-                logging.debug("duplicate")
+                logging.debug("action: duplicate")
                 self.duplicate()
             elif lightness_change == 1:
-                logging.debug("roll")
+                logging.debug("action: roll")
                 self.roll()
             elif lightness_change == 2:
-                logging.debug("in(number)")
+                logging.debug("action: in(number)")
                 self.in_int()
         if hue_change == 5:
             if lightness_change == 0:
-                logging.debug("in(char)")
+                logging.debug("action: in(char)")
                 self.in_char()
             elif lightness_change == 1:
-                logging.debug("out(number)")
+                logging.debug("action: out(number)")
                 self.out_int()
             elif lightness_change == 2:
-                logging.debug("out(char)")
+                logging.debug("action: out(char)")
                 self.out_char()
 
     def push(self, value):
@@ -493,11 +491,14 @@ def main():
 
     usage = "usage: python %prog source_file"
     parser = optparse.OptionParser(usage=usage)
+    parser.add_option("-d", "--debug", action="store_true", dest="debug",
+                      help="print debugging information")
     (options, args) = parser.parse_args()
     if len(args) < 1:
         parser.print_help()
         exit()
-
+    if options.debug:
+        logging.basicConfig(level="DEBUG", format='%(message)s')
     with open(args[0], "r") as sourcefile:
         source = [[char for char in row.strip()] for row in
                   sourcefile.readlines()]
