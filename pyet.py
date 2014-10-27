@@ -489,7 +489,7 @@ class Interpreter:
 
 def main():
 
-    usage = "usage: python %prog source_file"
+    usage = "usage: python %prog [options] source_file"
     parser = optparse.OptionParser(usage=usage)
     parser.add_option("-d", "--debug", action="store_true", dest="debug",
                       help="print debugging information")

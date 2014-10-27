@@ -15,6 +15,16 @@ Once you have your Pyet program, you can interpret it:
 ```
 python3 pyet.py source.pyet
 ```
+
+For more options, use the `-h` flag:
+```
+python pyet.py -h
+Usage: python pyet.py [options] source_file
+
+Options:
+  -h, --help   show this help message and exit
+  -d, --debug  print debugging information
+```
 ## Restrictions
 
 Pyet does not yet support:
