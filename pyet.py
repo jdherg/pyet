@@ -301,7 +301,7 @@ class Interpreter:
         self._cc = "left"
 
     def run(self, step_max=None):
-        steps=0
+        steps = 0
         next_loc = self._navigator.find_next_loc(self._loc, self._dp, self._cc)
         while(next_loc[0] != (-1, -1)):
             previous_loc = self._loc
@@ -466,7 +466,7 @@ class Interpreter:
         self._stack.roll()
 
     def in_char(self):
-        print("Enter a character: ")
+        # print("Enter a character: ")
         c = sys.stdin.read(1)
         self._stack.push(ord(c[0]))  # TODO: Better input handling
 
