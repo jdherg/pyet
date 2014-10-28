@@ -7,6 +7,7 @@ import logging
 import operator
 import optparse
 
+
 # A list with a couple of helper functions
 # and a pretend-it-never happened approach to errors
 class PietStack(list):
@@ -299,7 +300,8 @@ class Interpreter:
         self._dp = "right"
         self._cc = "left"
 
-    def run(self, steps=None):
+    def run(self, step_max=None):
+        steps=0
         next_loc = self._navigator.find_next_loc(self._loc, self._dp, self._cc)
         while(next_loc[0] != (-1, -1)):
             previous_loc = self._loc
@@ -316,10 +318,9 @@ class Interpreter:
             current_color = self._navigator._source_map.get_blob_color(
                 current_blob)
             if(previous_color != "S" and next_loc[3]):
-                if(steps is not None):
-                    steps -= 1
-                    if steps == 0:
-                        return
+                steps += 1
+                if(step_max is not None and steps > step_max):
+                    return
                 self.execute(previous_color, current_color, previous_size)
             next_loc = self._navigator.find_next_loc(
                 self._loc, self._dp, self._cc)
@@ -493,6 +494,8 @@ def main():
     parser = optparse.OptionParser(usage=usage)
     parser.add_option("-d", "--debug", action="store_true", dest="debug",
                       help="print debugging information")
+    parser.add_option("-e", action="store", dest="step_max", type="int",
+                      help="execution step count limit")
     (options, args) = parser.parse_args()
     if len(args) < 1:
         parser.print_help()
@@ -504,6 +507,6 @@ def main():
                   sourcefile.readlines()]
     interpreter = Interpreter(source)
     # interpreter._navigator._source_map.print_map()
-    interpreter.run()
+    interpreter.run(options.step_max)
 if __name__ == "__main__":
     main()
