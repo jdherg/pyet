@@ -30,3 +30,12 @@ Antoine Lucas' Piet implementation of the venerable cowsay utility.
 ```
 echo "This is a test." | python3 pyet.py examples/cowsay.pyet
 ```
+
+### Pi
+
+<img src="pi.png" />
+
+Richard Mitton's Piet Pi approximating program. It uses an actual pixel circle and that circle's radius to do the approximation. (Decimal point not included.)
+```
+python3 pyet.py examples/pi.pyet
+```

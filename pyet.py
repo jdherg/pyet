@@ -146,26 +146,26 @@ class SourceMap():
 
     def _fill(self, loc, target_value, fill_value,
               ingrid, outgrid, annotations):
-        x, y = loc
-        if x < 0 or y < 0 or y >= len(ingrid) or x >= len(ingrid[0]):
-            return
-        if outgrid[y][x] == fill_value:
-            return
-        if ingrid[y][x] != target_value:
-            return
-        outgrid[y][x] = fill_value
-        if target_value != "S" and target_value != "T":
-            annotations["size"][fill_value] = annotations["size"].get(
-                fill_value, 0) + 1
-            self._update_corners(loc, annotations, fill_value)
-        self._fill(
-            (x - 1, y), target_value, fill_value, ingrid, outgrid, annotations)
-        self._fill(
-            (x + 1, y), target_value, fill_value, ingrid, outgrid, annotations)
-        self._fill(
-            (x, y - 1), target_value, fill_value, ingrid, outgrid, annotations)
-        self._fill(
-            (x, y + 1), target_value, fill_value, ingrid, outgrid, annotations)
+        fill_queue = list()
+        fill_queue.append(loc)
+        while len(fill_queue):
+            x, y = fill_queue[0]
+            fill_queue = fill_queue[1:]
+            if x < 0 or y < 0 or y >= len(ingrid) or x >= len(ingrid[0]):
+                continue
+            if outgrid[y][x] == fill_value:
+                continue
+            if ingrid[y][x] != target_value:
+                continue
+            outgrid[y][x] = fill_value
+            if target_value != "S" and target_value != "T":
+                annotations["size"][fill_value] = annotations["size"].get(
+                    fill_value, 0) + 1
+                self._update_corners((x, y), annotations, fill_value)
+                fill_queue.append((x - 1, y))
+                fill_queue.append((x + 1, y))
+                fill_queue.append((x, y - 1))
+                fill_queue.append((x, y + 1))
 
     def _update_corners(self, loc, annotations, fill_value):
         if fill_value not in annotations["corners"]:

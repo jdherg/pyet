@@ -30,7 +30,6 @@ Options:
 Pyet does not yet support:
 * The "in" commands (char or int).
 * Specifying a codel size. Codels are 1 pixel.
-* Color blocks larger than ~1000 codels.
 
 ## Requirements
 
